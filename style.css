@@ -1,0 +1,1822 @@
+
+/* =============================================
+   BATTLE-ON v1.4
+   HIP-HOP STREET EDITION
+   ============================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --bg: #0b0b0d;
+  --side: #121215;
+  --panel: #1a1a1e;
+  --panel2: #25252b;
+  --line: #393940;
+  --red: #f12d43;
+  --red-dark: #8c1826;
+  --white: #f5f2ed;
+  --muted: #aaa6ad;
+  --green: #3ce3a1;
+  --yellow: #ffd34e;
+  --display: "Anton", Impact, sans-serif;
+  --heading: "Barlow Condensed", Impact, sans-serif;
+  --body: "Inter", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(
+      ellipse at 85% 0,
+      rgba(241,45,67,.13),
+      transparent 38%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 5px,
+      rgba(255,255,255,.009) 6px
+    ),
+    #0b0b0d;
+  color: var(--white);
+  font-family: var(--body);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .22;
+  background-image:
+    radial-gradient(#fff 0.55px,transparent 0.7px),
+    radial-gradient(#000 0.8px,transparent 1px);
+  background-size: 13px 13px,19px 19px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--heading);
+  text-transform: uppercase;
+}
+
+::selection {
+  background: var(--red);
+  color: white;
+}
+
+:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 3px;
+}
+
+/* =============================================
+   SIDEBAR - CULTURA URBANA
+   ============================================= */
+
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  overflow-y: auto;
+  background:
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(241,45,67,.14),
+      transparent 37%
+    ),
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 20px,
+      rgba(255,255,255,.014) 21px 22px
+    ),
+    var(--side);
+  border-right: 1px solid #4b3035;
+}
+
+.sidebar::before {
+  content: "";
+  height: 6px;
+  flex-shrink: 0;
+  background: repeating-linear-gradient(
+    110deg,
+    var(--red) 0 26px,
+    #101014 26px 35px
+  );
+}
+
+.sidebar::after {
+  content: "HIP HOP\A CULTURE";
+  white-space: pre;
+  position: absolute;
+  right: -8px;
+  bottom: 120px;
+  font-family: var(--display);
+  font-size: 48px;
+  line-height: .94;
+  color: rgba(255,255,255,.025);
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 29px 15px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  z-index: 1;
+}
+
+.brand-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 51px;
+  height: 51px;
+  border: 2px solid #ff7280;
+  border-radius: 7px;
+  background: var(--red);
+  box-shadow: 5px 5px 0 #631b27;
+  font-size: 26px;
+  transform: rotate(-6deg);
+}
+
+.brand-name {
+  font-family: var(--display);
+  font-size: 27px;
+  letter-spacing: .5px;
+  white-space: nowrap;
+}
+
+.brand-name span {
+  color: var(--red);
+}
+
+.brand-subtitle {
+  margin-top: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #c6b5b8;
+}
+
+.menu-label {
+  padding: 26px 20px 13px;
+  color: #b09b9f;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.navigation {
+  display: grid;
+  gap: 7px;
+  padding: 0 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  min-height: 49px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: #bcb7bc;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: left;
+  transition: .18s;
+}
+
+.nav-btn:hover {
+  color: white;
+  background: #302127;
+  transform: translateX(3px);
+}
+
+.nav-btn.active {
+  color: white;
+  border-left: 4px solid var(--red);
+  border-top-color: #66333c;
+  background:
+    linear-gradient(90deg,#55222d,#251a1e);
+  box-shadow: 3px 3px 0 #09090b;
+}
+
+.nav-btn.active::after {
+  content: "●";
+  margin-left: auto;
+  color: var(--red);
+  font-size: 9px;
+}
+
+.sidebar-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  padding: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.online-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 12px #3ce3a166;
+}
+
+/* =============================================
+   LAYOUT
+   ============================================= */
+
+.main {
+  margin-left: 260px;
+  padding: 30px 36px 80px;
+  min-width: 0;
+  max-width: 1900px;
+}
+
+.topbar,
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.topbar {
+  justify-content: space-between;
+  padding-bottom: 23px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  color: var(--red);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2.3px;
+}
+
+h1 {
+  margin: 6px 0 0;
+  font-family: var(--display);
+  font-size: 40px;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+.event-pill {
+  max-width: 240px;
+  padding: 11px 16px;
+  border: 1px solid #77323d;
+  border-radius: 3px;
+  background: #2a191e;
+  color: #ffb6bf;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.page {
+  display: none;
+  animation: pageIn .2s ease-out;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes pageIn {
+  from {
+    opacity: .5;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+   GRAFFITI / CARTAZ PRINCIPAL
+   ============================================= */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 310px;
+  padding: 50px 44px;
+  margin-bottom: 28px;
+  border: 1px solid #963642;
+  border-left: 7px solid var(--red);
+  border-radius: 4px;
+  background:
+    radial-gradient(
+      ellipse at 80% 30%,
+      rgba(255,70,90,.25),
+      transparent 40%
+    ),
+    repeating-linear-gradient(
+      -25deg,
+      transparent 0 26px,
+      rgba(255,255,255,.025) 27px 29px
+    ),
+    linear-gradient(120deg,#32141d,#111115 72%);
+  box-shadow: 7px 7px 0 #250f15;
+}
+
+.hero::before {
+  content: "BATTLE\A ON!";
+  white-space: pre;
+  position: absolute;
+  right: 4%;
+  top: 10%;
+  z-index: -1;
+  font-family: var(--display);
+  font-size: clamp(100px,13vw,220px);
+  line-height: .82;
+  letter-spacing: -5px;
+  color: rgba(255,255,255,.045);
+  -webkit-text-stroke: 2px rgba(255,255,255,.13);
+  transform: rotate(-10deg);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: "HIP-HOP • FREESTYLE • STREET CULTURE";
+  position: absolute;
+  right: -52px;
+  bottom: 20px;
+  padding: 9px 80px;
+  background: var(--yellow);
+  color: #151515;
+  font-family: var(--heading);
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  transform: rotate(-7deg);
+  pointer-events: none;
+}
+
+.hero h2 {
+  position: relative;
+  z-index: 2;
+  max-width: 680px;
+  margin: 18px 0;
+  font-family: var(--display);
+  font-size: clamp(44px,6vw,83px);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: 1px;
+  text-shadow: 4px 4px 0 #08080a;
+}
+
+.hero h2 span {
+  color: var(--red);
+  text-shadow: 4px 4px 0 #681521;
+}
+
+.hero p {
+  position: relative;
+  z-index: 2;
+  max-width: 500px;
+  color: #e2d6d9;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.hero-mic {
+  position: absolute;
+  right: 14%;
+  top: 23%;
+  z-index: 1;
+  font-size: 140px;
+  opacity: .35;
+  transform: rotate(-20deg);
+  filter: drop-shadow(8px 8px 0 #000);
+  pointer-events: none;
+}
+
+/* =============================================
+   ELEMENTOS GRÁFICOS HIP-HOP
+   ============================================= */
+
+/* Cartaz de batalha */
+.street-poster {
+  position: relative;
+  overflow: hidden;
+  padding: 22px 25px;
+  margin-bottom: 22px;
+  border: 2px solid #9a3947;
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 9px,
+      rgba(255,255,255,.02) 10px
+    ),
+    linear-gradient(120deg,#2c121a,#17171b);
+  box-shadow: 5px 5px 0 #070709;
+}
+
+.street-poster::before {
+  content: "LIVE • CYPHER • FREESTYLE";
+  display: block;
+  margin-bottom: 10px;
+  color: var(--yellow);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+.street-poster::after {
+  content: "EST. 2026";
+  position: absolute;
+  right: 16px;
+  top: 18px;
+  padding: 6px 10px;
+  border: 1px solid #a84c59;
+  color: #ffb7c0;
+  font-family: var(--heading);
+  font-weight: 900;
+  transform: rotate(7deg);
+}
+
+/* Vinil desenhado em CSS */
+.street-vinyl {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid #48484d;
+  background:
+    radial-gradient(
+      circle,
+      #0b0b0d 0 5px,
+      #f12d43 6px 23px,
+      #111 24px 28px,
+      transparent 29px
+    ),
+    repeating-radial-gradient(
+      circle,
+      #16161a 0 4px,
+      #2b2b31 5px 6px,
+      #0c0c0e 7px 10px
+    );
+  box-shadow:
+    7px 8px 0 #080809,
+    inset -13px -10px 20px #0008;
+  transform: rotate(-15deg);
+}
+
+.street-vinyl::after {
+  content: "B-ON";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  color: white;
+  font-family: var(--display);
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+/* Parede com grafite */
+.street-wall {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 26px;
+  border: 1px solid #65424b;
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 31px,
+      #ffffff0c 32px 33px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 75px,
+      #ffffff08 76px 77px
+    ),
+    linear-gradient(135deg,#29262a,#151518);
+}
+
+.street-wall::before {
+  content: "HIP\A HOP";
+  white-space: pre;
+  position: absolute;
+  top: -20px;
+  right: 15px;
+  z-index: -1;
+  font-family: var(--display);
+  font-size: 110px;
+  line-height: .85;
+  color: rgba(241,45,67,.13);
+  -webkit-text-stroke: 2px rgba(255,255,255,.1);
+  transform: rotate(-12deg);
+}
+
+/* Marca de spray */
+.street-spray {
+  position: absolute;
+  width: 150px;
+  height: 130px;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(241,45,67,.22),
+      transparent 70%
+    );
+  filter: blur(5px);
+  pointer-events: none;
+}
+
+/* Microfone gráfico, desenhado sem imagem externa */
+.street-microphone {
+  position: relative;
+  width: 75px;
+  height: 145px;
+  flex-shrink: 0;
+  transform: rotate(-20deg);
+  filter: drop-shadow(6px 8px 0 #0008);
+}
+
+.street-microphone::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 16px;
+  width: 43px;
+  height: 61px;
+  border: 3px solid #e0e0e4;
+  border-radius: 22px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      #a3a3ae 0 4px,
+      #34343e 5px 8px
+    );
+  box-shadow: inset -9px -5px 10px #0007;
+}
+
+.street-microphone::after {
+  content: "";
+  position: absolute;
+  top: 64px;
+  left: 33px;
+  width: 12px;
+  height: 74px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    #55555d,
+    #d5d5dc 35%,
+    #34343b 80%
+  );
+  box-shadow: 0 0 0 2px #222;
+}
+
+/* Adesivo urbano */
+.street-sticker {
+  display: inline-block;
+  padding: 8px 13px;
+  border: 2px solid #111;
+  border-radius: 2px;
+  background: var(--yellow);
+  color: #171717;
+  font-family: var(--heading);
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  transform: rotate(-5deg);
+  box-shadow: 4px 4px 0 #0008;
+}
+
+/* =============================================
+   TÍTULOS E PAINÉIS
+   ============================================= */
+
+.section-heading {
+  padding-left: 19px;
+  margin-bottom: 24px;
+  border-left: 5px solid var(--red);
+}
+
+.section-heading h2 {
+  margin-bottom: 5px;
+  font-family: var(--display);
+  font-size: 40px;
+  font-weight: 400;
+}
+
+.section-heading p,
+.muted,
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.panel {
+  position: relative;
+  min-width: 0;
+  padding: 25px;
+  margin-bottom: 22px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.018),
+      transparent 55%
+    ),
+    var(--panel);
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding-bottom: 13px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #414149;
+  font-family: var(--heading);
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.panel-title::before {
+  content: "";
+  width: 5px;
+  height: 23px;
+  flex-shrink: 0;
+  background: var(--red);
+  transform: skew(-12deg);
+}
+
+.empty {
+  padding: 27px 12px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* =============================================
+   BOTÕES
+   ============================================= */
+
+.btn {
+  min-height: 47px;
+  padding: 12px 20px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: white;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  transition: transform .15s,filter .15s;
+  touch-action: manipulation;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+}
+
+.btn.primary {
+  background: var(--red);
+  box-shadow: 3px 3px 0 #781a29;
+}
+
+.btn.secondary {
+  background: var(--panel2);
+  border-color: #53535d;
+}
+
+.btn.danger {
+  background: #3e1c25;
+  border-color: #823441;
+  color: #ffacb7;
+}
+
+.actions,
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.toolbar {
+  margin-bottom: 20px;
+}
+
+/* =============================================
+   DASHBOARD
+   ============================================= */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 15px;
+  margin-bottom: 24px;
+}
+
+.stat {
+  position: relative;
+  min-width: 0;
+  padding: 22px;
+  overflow: hidden;
+  border: 1px solid #454149;
+  border-top: 4px solid var(--red);
+  border-radius: 3px;
+  background: #1b1a1e;
+}
+
+.stat::after {
+  content: "★";
+  position: absolute;
+  top: -13px;
+  right: 4px;
+  color: rgba(255,255,255,.045);
+  font-size: 100px;
+  pointer-events: none;
+}
+
+.stat-label {
+  position: relative;
+  z-index: 1;
+  color: #bbb3b9;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.stat strong {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin: 10px 0 3px;
+  font-family: var(--display);
+  font-size: 47px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.stat strong.stat-phase {
+  font-family: var(--heading);
+  font-size: 29px;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.stat small {
+  color: #969096;
+  font-size: 11px;
+}
+
+/* =============================================
+   FORMULÁRIOS
+   ============================================= */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 20px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  color: #eee8ea;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+label small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+input,
+select {
+  width: 100%;
+  min-width: 0;
+  min-height: 47px;
+  padding: 12px 13px;
+  border: 1px solid #4a464e;
+  border-radius: 3px;
+  outline: none;
+  background: #0c0c0f;
+  color: var(--white);
+  font-size: 16px;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 2px #f12d4326;
+}
+
+input:disabled,
+select:disabled {
+  opacity: .5;
+}
+
+input::placeholder {
+  color: #777078;
+}
+
+.full {
+  grid-column: 1/-1;
+}
+
+.inline-form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 11px;
+  margin-bottom: 18px;
+}
+
+.inline-form input {
+  flex: 1 1 180px;
+}
+
+/* Controle de rounds */
+#round-settings > div {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #62404b !important;
+  background:
+    linear-gradient(120deg,#20171d,#111116) !important;
+}
+
+#round-settings h3 {
+  font-family: var(--display);
+  font-size: 27px !important;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+#round-settings > div::after {
+  content: "16 BARS";
+  position: absolute;
+  top: 7px;
+  right: 13px;
+  color: rgba(255,255,255,.06);
+  font-family: var(--display);
+  font-size: 42px;
+  transform: rotate(-8deg);
+  pointer-events: none;
+}
+
+/* =============================================
+   MCs E EQUIPES
+   ============================================= */
+
+.mc-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.mc-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 13px;
+  padding: 15px;
+  border: 1px solid #434149;
+  border-left: 4px solid #ad3445;
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(
+      -35deg,
+      transparent 0 18px,
+      #ffffff05 19px 20px
+    ),
+    #131316;
+}
+
+.mc-item:hover {
+  border-left-color: var(--yellow);
+}
+
+.mc-item > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mc-item strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.mc-item small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.team-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.team-options label {
+  flex-direction: row;
+  align-items: center;
+  padding: 13px;
+  border: 1px solid #49444b;
+  border-radius: 3px;
+  background: #121215;
+  cursor: pointer;
+}
+
+.team-options label:has(input:checked) {
+  border-color: var(--red);
+  background: #3b1d26;
+}
+
+.team-options input,
+.vote-choice input {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  accent-color: var(--red);
+}
+
+/* =============================================
+   CHAVEAMENTO
+   ============================================= */
+
+.bracket {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  overflow-x: auto;
+  padding: 12px 5px 26px;
+  scrollbar-color: var(--red) #222;
+}
+
+.round {
+  display: flex;
+  flex: 0 0 255px;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.round h3 {
+  position: relative;
+  overflow: hidden;
+  margin: 0 0 7px;
+  padding: 13px;
+  border-left: 5px solid var(--red);
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 13px,
+      #ffffff0b 14px 15px
+    ),
+    #421d29;
+  font-family: var(--heading);
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.match-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #4b454d;
+  border-radius: 3px;
+  background: #1b1a1e;
+  box-shadow: 3px 3px 0 #09090b;
+}
+
+.match-card:hover {
+  border-color: var(--red);
+}
+
+.match-head {
+  padding: 11px 13px;
+  background: #2c232a;
+  color: #f3b4bd;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+.match-player {
+  padding: 16px 14px;
+  border-top: 1px solid #3b383f;
+  font-size: 13px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.match-player.winner {
+  border-left: 4px solid var(--green);
+  background: #173329;
+  color: var(--green);
+}
+
+.match-player.loser {
+  opacity: .45;
+}
+
+.match-footer {
+  padding: 11px 13px;
+  border-top: 1px solid #38343b;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.mobile-phase-filter {
+  display: none;
+}
+
+/* =============================================
+   ARENA - PALCO DE BATALHA
+   ============================================= */
+
+.arena-match {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 210px;
+  overflow: hidden;
+  padding: 42px 20px;
+  text-align: center;
+  background:
+    radial-gradient(
+      ellipse at 20% 0%,
+      rgba(241,45,67,.18),
+      transparent 47%
+    ),
+    radial-gradient(
+      ellipse at 80% 0%,
+      rgba(255,211,78,.09),
+      transparent 45%
+    ),
+    repeating-linear-gradient(
+      -30deg,
+      transparent 0 26px,
+      rgba(255,255,255,.014) 27px 29px
+    ),
+    #131216;
+}
+
+.arena-match::before,
+.arena-match::after {
+  content: "";
+  position: absolute;
+  top: -70px;
+  width: 160px;
+  height: 310px;
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    rgba(241,45,67,.18),
+    transparent
+  );
+  filter: blur(15px);
+  pointer-events: none;
+}
+
+.arena-match::before {
+  left: 13%;
+  transform: rotate(22deg);
+}
+
+.arena-match::after {
+  right: 13%;
+  transform: rotate(-22deg);
+}
+
+.fighter {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--display);
+  font-size: clamp(28px,4.2vw,58px);
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  overflow-wrap: anywhere;
+  text-shadow: 3px 4px 0 #000;
+}
+
+.fighter:first-child {
+  color: var(--red);
+}
+
+.vs {
+  flex-shrink: 0;
+  font-family: var(--display);
+  font-size: 48px;
+  color: var(--yellow);
+  transform: rotate(-8deg);
+  text-shadow: 4px 4px 0 #66420b;
+}
+
+/* =============================================
+   CRONÔMETRO E VERSOS
+   ============================================= */
+
+.timer {
+  padding: 30px 6px;
+  border-top: 1px dashed #71404a;
+  text-align: center;
+}
+
+.timer-label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+#timer-display {
+  margin: 8px 0;
+  font-family: var(--display);
+  font-size: clamp(75px,11vw,125px);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  letter-spacing: 3px;
+  text-shadow: 4px 4px 0 #29262b;
+}
+
+#timer-display.ended {
+  color: var(--red);
+}
+
+.timer-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 11px;
+}
+
+#verse-counter {
+  border-top: 1px dashed #71404a !important;
+  padding: 28px 0 !important;
+}
+
+#verse-counter h3 {
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+#verse-counter > div > div {
+  box-shadow: 3px 3px 0 #09090b;
+}
+
+/* =============================================
+   VOTAÇÃO
+   ============================================= */
+
+.vote-row {
+  display: grid;
+  grid-template-columns: minmax(100px,1fr) minmax(0,3fr);
+  align-items: center;
+  gap: 15px;
+  padding: 17px 0;
+  border-bottom: 1px dashed #49434b;
+}
+
+.vote-row > strong {
+  font-family: var(--heading);
+  font-size: 21px;
+  letter-spacing: 1px;
+}
+
+.vote-choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px;
+}
+
+.vote-choice label {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #514b52;
+  border-radius: 3px;
+  background: #121215;
+  cursor: pointer;
+}
+
+.vote-choice label:hover {
+  border-color: var(--red);
+}
+
+.vote-choice label:has(input:checked) {
+  border-color: var(--red);
+  background: #421d28;
+}
+
+.vote-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.vote-actions {
+  margin-top: 23px;
+}
+
+#vote-result {
+  margin-top: 20px;
+}
+
+/* =============================================
+   RESULTADOS / ALERTAS
+   ============================================= */
+
+.result-box,
+.warning-box {
+  padding: 19px;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.result-box {
+  border: 1px solid #348765;
+  border-left: 5px solid var(--green);
+  background: #153026;
+  color: var(--green);
+}
+
+.warning-box {
+  border: 1px solid #884250;
+  border-left: 5px solid var(--red);
+  background: #382026;
+  color: #ffb6c0;
+}
+
+.toast {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 100;
+  display: none;
+  max-width: min(380px,calc(100vw - 30px));
+  padding: 16px 20px;
+  border: 1px solid #666;
+  border-left: 5px solid var(--red);
+  border-radius: 3px;
+  background: #252329;
+  box-shadow: 0 12px 35px #0009;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.toast.show {
+  display: block;
+}
+
+/* =============================================
+   NOVA CAMADA VISUAL
+   ============================================= */
+
+.street-banner {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  min-height: 190px;
+  padding: 25px 30px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  border: 2px solid #79313f;
+  border-radius: 3px;
+  background:
+    radial-gradient(
+      ellipse at 70% 40%,
+      rgba(241,45,67,.24),
+      transparent 50%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 29px,
+      rgba(255,255,255,.035) 30px 31px
+    ),
+    linear-gradient(115deg,#2b161f,#121216);
+  box-shadow: 5px 5px 0 #09090b;
+}
+
+.street-banner::before {
+  content: "BATTLE";
+  position: absolute;
+  right: 0;
+  top: -40px;
+  z-index: -1;
+  font-family: var(--display);
+  font-size: clamp(100px,14vw,210px);
+  letter-spacing: -4px;
+  color: rgba(255,255,255,.04);
+  -webkit-text-stroke: 2px rgba(255,255,255,.1);
+  transform: rotate(-8deg);
+  pointer-events: none;
+}
+
+.street-banner h2 {
+  margin: 10px 0;
+  font-family: var(--display);
+  font-size: clamp(35px,4vw,55px);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.street-banner p {
+  max-width: 510px;
+  margin: 0;
+  color: #d6cbd0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.street-banner .street-vinyl,
+.street-banner .street-microphone {
+  position: relative;
+  z-index: 1;
+}
+
+.street-banner-tag {
+  display: inline-block;
+  padding: 7px 11px;
+  background: var(--yellow);
+  color: #151515;
+  font-family: var(--heading);
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  transform: rotate(-3deg);
+}
+
+.street-art-wall {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px;
+  margin-bottom: 23px;
+  overflow: hidden;
+  border: 1px solid #63404b;
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 28px,
+      rgba(255,255,255,.045) 29px 30px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 85px,
+      rgba(255,255,255,.025) 86px 87px
+    ),
+    linear-gradient(125deg,#2b282c,#151518);
+}
+
+.street-art-wall::after {
+  content: "RAP";
+  position: absolute;
+  right: 100px;
+  top: -22px;
+  color: rgba(241,45,67,.14);
+  font-family: var(--display);
+  font-size: 140px;
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+
+.street-art-wall h3 {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 8px;
+  font-family: var(--display);
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.street-art-wall p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: #d3cbd0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.street-art-wall .street-sticker {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+/* =============================================
+   MOBILE MENU
+   ============================================= */
+
+.mobile-only,
+.overlay {
+  display: none;
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #55515a;
+  border-radius: 3px;
+  background: #27242b;
+  color: white;
+  font-size: 22px;
+}
+
+/* =============================================
+   TABLETS
+   ============================================= */
+
+@media (max-width: 1100px) {
+  .main {
+    padding: 25px 23px 65px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  .hero h2 {
+    font-size: clamp(45px,6vw,70px);
+  }
+}
+
+/* =============================================
+   MENU RESPONSIVO
+   ============================================= */
+
+@media (max-width: 800px) {
+  .mobile-only {
+    display: grid;
+    place-items: center;
+  }
+
+  .sidebar {
+    width: min(305px,85vw);
+    transform: translateX(-105%);
+    transition: transform .22s ease;
+    box-shadow: 12px 0 40px #0009;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background: rgba(0,0,0,.76);
+  }
+
+  .overlay.show {
+    display: block;
+  }
+
+  body.menu-open {
+    overflow: hidden;
+  }
+
+  #close-menu {
+    margin-left: auto;
+  }
+
+  .main {
+    margin-left: 0;
+    padding: 20px 16px 70px;
+  }
+
+  h1 {
+    font-size: 33px;
+  }
+
+  .hero {
+    padding: 35px 28px;
+  }
+
+  .hero-mic {
+    display: none;
+  }
+
+  .mobile-phase-filter {
+    display: block;
+    margin-bottom: 18px;
+  }
+
+  .bracket {
+    display: block;
+    overflow: visible;
+  }
+
+  .round {
+    display: none;
+  }
+
+  .round.mobile-active {
+    display: flex;
+    width: 100%;
+  }
+
+  .match-card {
+    width: 100%;
+  }
+}
+
+/* =============================================
+   CELULARES
+   ============================================= */
+
+@media (max-width: 560px) {
+  .main {
+    padding: 16px 12px 65px;
+  }
+
+  .topbar {
+    align-items: flex-start;
+    gap: 9px;
+  }
+
+  .topbar-left {
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .eyebrow {
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+
+  h1 {
+    font-size: 29px;
+  }
+
+  .event-pill {
+    max-width: 105px;
+    padding: 9px;
+    font-size: 10px;
+  }
+
+  .hero {
+    padding: 28px 19px;
+    min-height: 260px;
+    border-left-width: 5px;
+    box-shadow: 4px 4px 0 #250f15;
+  }
+
+  .hero h2 {
+    font-size: clamp(39px,10vw,53px);
+  }
+
+  .hero p {
+    font-size: 13px;
+  }
+
+  .hero::after {
+    right: -85px;
+    bottom: 12px;
+    font-size: 11px;
+  }
+
+  .stats {
+    gap: 10px;
+  }
+
+  .stat {
+    padding: 16px;
+  }
+
+  .stat strong {
+    font-size: 39px;
+  }
+
+  .stat strong.stat-phase {
+    font-size: 23px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+  }
+
+  .panel {
+    padding: 18px 14px;
+  }
+
+  .section-heading h2 {
+    font-size: 33px;
+  }
+
+  .form-grid,
+  .vote-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inline-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .inline-form input {
+    flex: auto;
+    width: 100%;
+  }
+
+  .actions .btn,
+  .toolbar .btn {
+    flex: 1 1 100%;
+  }
+
+  .arena-match {
+    min-height: 150px;
+    padding: 28px 8px;
+    gap: 8px;
+  }
+
+  .fighter {
+    font-size: clamp(23px,7vw,37px);
+  }
+
+  .vs {
+    font-size: 30px;
+  }
+
+  #timer-display {
+    font-size: clamp(65px,17vw,85px);
+  }
+
+  .timer-actions .btn {
+    flex: 1;
+  }
+
+  .vote-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .vote-choice {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .vote-choice label {
+    min-height: 49px;
+    padding: 14px;
+  }
+
+  .mc-item {
+    align-items: flex-start;
+  }
+
+  .mc-item .btn {
+    flex-shrink: 0;
+    padding: 11px;
+    font-size: 10px;
+  }
+
+  .street-banner {
+    min-height: 150px;
+    padding: 19px;
+  }
+
+  .street-banner h2 {
+    font-size: 33px;
+  }
+
+  .street-banner .street-vinyl {
+    width: 90px;
+    height: 90px;
+  }
+
+  .street-banner .street-microphone {
+    transform: scale(.65) rotate(-20deg);
+    transform-origin: center;
+    margin-right: -15px;
+  }
+
+  .street-art-wall {
+    padding: 17px;
+  }
+
+  .street-art-wall h3 {
+    font-size: 24px;
+  }
+
+  .street-art-wall .street-sticker {
+    font-size: 12px;
+    padding: 7px;
+  }
+
+  .toast {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-width: none;
+  }
+}
+
+@media (max-width: 390px) {
+  .street-banner .street-vinyl,
+  .street-banner .street-microphone {
+    display: none;
+  }
+
+  .street-art-wall .street-sticker {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

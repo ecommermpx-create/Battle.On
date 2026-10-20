@@ -1,0 +1,531 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0c10">
+
+  <title>BATTLE-ON | Arena de Rimas</title>
+
+  <link rel="stylesheet" href="./style.css">
+
+  <style>
+    body:not(.battle-authorized) > .sidebar,
+    body:not(.battle-authorized) > .main {
+      display:none !important;
+    }
+  </style>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    defer></script>
+
+  <script src="./script.js" defer></script>
+  <script src="./galeria.js" defer></script>
+  <script src="./ranking.js" defer></script>
+  <script src="./auth.js" defer></script>
+</head>
+
+<body>
+  <div id="overlay" class="overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-icon">🎤</div>
+
+      <div>
+        <div class="brand-name">
+          BATTLE<span>-ON</span>
+        </div>
+
+        <div class="brand-subtitle">
+          ARENA DE RIMAS
+        </div>
+      </div>
+
+      <button id="close-menu"
+        class="icon-btn mobile-only"
+        aria-label="Fechar menu">✕</button>
+    </div>
+
+    <div class="menu-label">MENU PRINCIPAL</div>
+
+    <nav class="navigation">
+      <button class="nav-btn active"
+        data-page="dashboard">
+        ▦ <span>Visão geral</span>
+      </button>
+
+      <button class="nav-btn"
+        data-page="config">
+        ⚙ <span>Configurações</span>
+      </button>
+
+      <button class="nav-btn"
+        data-page="mcs">
+        ♟ <span>Participantes</span>
+      </button>
+
+      <button class="nav-btn"
+        data-page="chave">
+        ⑂ <span>Chaveamento</span>
+      </button>
+
+      <button class="nav-btn"
+        data-page="arena">
+        🎤 <span>Arena e votação</span>
+      </button>
+
+      <button class="nav-btn"
+        data-page="historico">
+        ▤ <span>Histórico</span>
+      </button>
+
+      <button class="nav-btn"
+        data-page="ranking">
+        ♛ <span>Ranking</span>
+      </button>
+
+      <button class="nav-btn"
+        data-page="perfis">
+        ◉ <span>Perfil dos MCs</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span class="online-dot"></span>
+      BATTLE-ON · V1.7
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="open-menu"
+          class="icon-btn mobile-only"
+          aria-label="Abrir menu">☰</button>
+
+        <div>
+          <div class="eyebrow">
+            BATTLE-ON / PAINEL DE CONTROLE
+          </div>
+
+          <h1 id="page-title">
+            Visão geral
+          </h1>
+        </div>
+      </div>
+
+      <div class="event-pill" id="event-pill">
+        BATTLE-ON
+      </div>
+    </header>
+
+    <section class="page active"
+      id="page-dashboard">
+
+      <div class="hero">
+        <div class="eyebrow">
+          A BATALHA COMEÇA AQUI
+        </div>
+
+        <h2>
+          ONDE AS RIMAS<br>
+          VIRAM <span>HISTÓRIA.</span>
+        </h2>
+
+        <p>
+          Cadastre, sorteie, vote e
+          descubra o campeão.
+        </p>
+
+        <button class="btn primary"
+          data-go="config">
+          CONFIGURAR EVENTO →
+        </button>
+
+        <div class="hero-mic">🎤</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">
+            MCS CADASTRADOS
+          </div>
+
+          <strong id="stat-mcs">0</strong>
+          <small>Participantes</small>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">
+            CONFRONTOS
+          </div>
+
+          <strong id="stat-total">0</strong>
+          <small>Total de batalhas</small>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">
+            FINALIZADOS
+          </div>
+
+          <strong id="stat-done">0</strong>
+          <small>Resultados apurados</small>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">
+            FASE ATUAL
+          </div>
+
+          <strong class="stat-phase"
+            id="stat-phase">—</strong>
+
+          <small>Etapa do evento</small>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          ⚡ PRÓXIMO CONFRONTO
+        </div>
+
+        <div id="next-battle" class="empty">
+          Cadastre os MCs e realize o sorteio.
+        </div>
+
+        <div id="champion-box"></div>
+      </div>
+
+      <section class="panel"
+        id="galeria-principal"
+        aria-label="Fotos principais da batalha">
+
+        <div class="panel-title">
+          📸 REGISTROS DA BATALHA
+        </div>
+
+        <p class="muted" id="galeria-status">
+          Finalize a batalha para liberar as fotos.
+        </p>
+
+        <div class="galeria-grid"
+          id="galeria-grid"></div>
+      </section>
+    </section>
+
+    <section class="page" id="page-ranking">
+      <div class="section-heading">
+        <h2>RANKING DOS MCS</h2>
+        <p>
+          Classificação geral e por temporada.
+        </p>
+      </div>
+
+      <div id="ranking-content"></div>
+    </section>
+
+    <section class="page" id="page-perfis">
+      <div class="section-heading">
+        <h2>PERFIL DOS MCS</h2>
+        <p>
+          Estatísticas, fotos e trajetória
+          dos participantes.
+        </p>
+      </div>
+
+      <div id="perfis-content"></div>
+    </section>
+
+    <section class="page" id="page-config">
+      <div class="section-heading">
+        <h2>CONFIGURAÇÕES</h2>
+        <p>
+          Personalize as regras do seu evento.
+        </p>
+      </div>
+
+      <form id="config-form"
+        class="panel form-grid">
+
+        <label>
+          Nome do evento
+          <input id="event-name"
+            maxlength="80" required>
+        </label>
+
+        <label>
+          MCs por equipe
+          <input id="team-size"
+            type="number"
+            min="1" max="20" required>
+
+          <small>
+            1 = individual, 2 = duplas,
+            3 = trios...
+          </small>
+        </label>
+
+        <label>
+          Sistema de decisão
+
+          <select id="vote-mode">
+            <option value="jurados">
+              Somente jurados
+            </option>
+
+            <option value="publico">
+              Somente público
+            </option>
+
+            <option value="ambos">
+              Público + jurados
+            </option>
+          </select>
+        </label>
+
+        <label>
+          Quantidade de jurados
+
+          <input id="judge-count"
+            type="number"
+            min="1" max="50" required>
+        </label>
+
+        <label>
+          Peso dos jurados (%)
+
+          <input id="judge-weight"
+            type="number"
+            min="0" max="100" required>
+
+          <small>
+            No modo misto, o restante é
+            o peso do público.
+          </small>
+        </label>
+
+        <label>
+          Tempo por round (segundos)
+
+          <input id="round-time"
+            type="number"
+            min="10" max="3600" required>
+        </label>
+
+        <div class="full actions">
+          <button type="submit"
+            class="btn primary">
+            SALVAR CONFIGURAÇÕES
+          </button>
+
+          <button type="button"
+            id="new-event"
+            class="btn danger">
+            NOVO EVENTO
+          </button>
+        </div>
+      </form>
+
+      <p class="hint">
+        As configurações ficam bloqueadas
+        após o sorteio.
+      </p>
+    </section>
+
+    <section class="page" id="page-mcs">
+      <div class="section-heading">
+        <h2>PARTICIPANTES</h2>
+        <p>Cadastre MCs e forme equipes.</p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          + CADASTRAR MC
+        </div>
+
+        <form id="mc-form"
+          class="inline-form">
+
+          <input id="mc-name"
+            maxlength="50"
+            required
+            placeholder="Vulgo do MC">
+
+          <input id="mc-city"
+            maxlength="60"
+            placeholder="Cidade / bairro">
+
+          <button class="btn primary"
+            type="submit">
+            ADICIONAR MC
+          </button>
+        </form>
+
+        <div id="mc-list"
+          class="mc-list"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          EQUIPES
+        </div>
+
+        <p class="muted">
+          Na modalidade individual, cada MC
+          participa sozinho. Para duplas,
+          trios e outras modalidades, forme
+          as equipes antes do sorteio.
+        </p>
+
+        <form id="team-form">
+          <div id="team-options"
+            class="team-options"></div>
+
+          <div class="inline-form">
+            <input id="team-name"
+              maxlength="60"
+              placeholder="Nome da equipe (opcional)">
+
+            <button class="btn primary"
+              type="submit">
+              CRIAR EQUIPE
+            </button>
+          </div>
+        </form>
+
+        <div id="team-list"
+          class="mc-list"></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-chave">
+      <div class="section-heading">
+        <h2>CHAVEAMENTO</h2>
+        <p>
+          Confrontos sorteados e
+          avanço automático.
+        </p>
+      </div>
+
+      <div class="toolbar">
+        <button id="draw-btn"
+          class="btn primary">
+          ⚡ REALIZAR SORTEIO
+        </button>
+
+        <button id="reset-bracket"
+          class="btn danger">
+          APAGAR CHAVE
+        </button>
+      </div>
+
+      <div class="mobile-phase-filter">
+        <label>
+          Visualizar fase
+          <select id="phase-select"></select>
+        </label>
+      </div>
+
+      <div id="bracket"
+        class="bracket"></div>
+    </section>
+
+    <section class="page" id="page-arena">
+      <div class="section-heading">
+        <h2>ARENA DE BATALHA</h2>
+        <p>
+          Cronômetro e votação
+          dos confrontos.
+        </p>
+      </div>
+
+      <div class="panel">
+        <label>
+          Confronto atual
+          <select id="battle-select"></select>
+        </label>
+
+        <div id="arena-match"
+          class="arena-match"></div>
+
+        <div class="timer">
+          <div class="timer-label">
+            CRONÔMETRO DO ROUND
+          </div>
+
+          <div id="timer-display">
+            00:45
+          </div>
+
+          <div class="timer-actions">
+            <button class="btn primary"
+              id="timer-start">
+              INICIAR / PAUSAR
+            </button>
+
+            <button class="btn secondary"
+              id="timer-reset">
+              REINICIAR
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel"
+        id="voting-panel">
+
+        <div class="panel-title">
+          🗳 VOTAÇÃO
+        </div>
+
+        <p class="muted">
+          Registre os votos do público
+          e dos jurados. O sistema calcula
+          o resultado.
+        </p>
+
+        <div id="vote-fields"></div>
+
+        <div class="actions vote-actions">
+          <button class="btn secondary"
+            id="save-votes">
+            SALVAR VOTOS
+          </button>
+
+          <button class="btn primary"
+            id="finish-battle">
+            ENCERRAR E APURAR
+          </button>
+        </div>
+
+        <div id="vote-result"></div>
+      </div>
+    </section>
+
+    <section class="page"
+      id="page-historico">
+
+      <div class="section-heading">
+        <h2>HISTÓRICO</h2>
+        <p>
+          Resultados dos confrontos
+          finalizados.
+        </p>
+      </div>
+
+      <div class="panel"
+        id="history-list"></div>
+    </section>
+  </main>
+
+  <div class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"></div>
+</body>
+</html>
