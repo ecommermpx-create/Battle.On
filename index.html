@@ -3,48 +3,264 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0c10">
-
   <title>BATTLE-ON | Arena de Rimas</title>
 
   <link rel="stylesheet" href="./style.css">
 
   <style>
-    body:not(.battle-authorized) > .sidebar,
-    body:not(.battle-authorized) > .main {
-      display:none !important;
+    #battle-local-auth {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      background: radial-gradient(
+        circle at 85% 10%,
+        #4a1525,
+        #0c0c10 55%
+      );
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    #battle-local-auth[hidden] {
+      display: none !important;
+    }
+
+    .bla-card {
+      width: min(100%, 430px);
+      box-sizing: border-box;
+      padding: 30px;
+      background: #19171d;
+      border: 1px solid #713043;
+      border-radius: 10px;
+      box-shadow: 7px 7px 0 #050507;
+    }
+
+    .bla-brand {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .bla-brand h2 {
+      margin: 0;
+      color: #fff;
+      font: 44px Impact, Arial, sans-serif;
+      letter-spacing: 2px;
+    }
+
+    .bla-brand h2 span {
+      color: #ed3b59;
+    }
+
+    .bla-brand small {
+      display: block;
+      margin-top: 7px;
+      color: #bbaeb5;
+      font-size: 10px;
+      letter-spacing: 2px;
+    }
+
+    .bla-badge {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 6px 10px;
+      background: #39212a;
+      border: 1px solid #8d4055;
+      color: #ffb4c3;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .bla-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .bla-tabs button {
+      flex: 1;
+      padding: 12px;
+      background: #302831;
+      border: 1px solid #614350;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .bla-tabs button.active {
+      background: #c72d4b;
+      border-color: #ef4562;
+    }
+
+    .bla-field {
+      display: block;
+      margin-bottom: 15px;
+      color: #eee;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .bla-field input,
+    .bla-field select {
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      margin-top: 7px;
+      padding: 13px;
+      background: #101015;
+      border: 1px solid #614752;
+      border-radius: 5px;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .bla-field input:focus,
+    .bla-field select:focus {
+      outline: 2px solid #ef4562;
+    }
+
+    .bla-check {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 14px 0;
+      color: #ddd;
+      font-size: 12px;
+    }
+
+    .bla-check input {
+      accent-color: #ed3b59;
+    }
+
+    .bla-button {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: #d72e4e;
+      border: 0;
+      border-radius: 5px;
+      color: #fff;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .bla-button:hover {
+      background: #ef405e;
+    }
+
+    .bla-link {
+      padding: 10px 0;
+      background: transparent;
+      border: 0;
+      color: #ff8da1;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .bla-note {
+      margin: 15px 0;
+      padding: 12px;
+      background: #30212a;
+      border-left: 3px solid #e83a59;
+      color: #e1d0d8;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .bla-message {
+      min-height: 18px;
+      margin-top: 12px;
+      color: #ffc2cd;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .bla-userbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 12px 18px;
+      padding: 12px;
+      background: #201920;
+      border: 1px solid #633849;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .bla-userbar button {
+      padding: 9px 14px;
+      background: #c52d4b;
+      border: 0;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .bla-userbar strong {
+      color: #ff8197;
+    }
+
+    .bla-hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 480px) {
+      .bla-card {
+        padding: 22px;
+      }
     }
   </style>
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-    defer></script>
-
+  <script src="./auth-local.js?v=171" defer></script>
   <script src="./script.js" defer></script>
   <script src="./galeria.js" defer></script>
   <script src="./ranking.js" defer></script>
-  <script src="./auth.js" defer></script>
 </head>
 
 <body>
+  <!-- O login existe no HTML mesmo antes do JavaScript. -->
+  <div id="battle-local-auth">
+    <div class="bla-card">
+      <div class="bla-brand">
+        <h2>BATTLE-<span>ON</span></h2>
+        <small>SUA ARENA. SUA HISTÓRIA.</small>
+        <div class="bla-badge">VERSÃO LOCAL 1.7.1</div>
+      </div>
+
+      <div id="bla-content">
+        <p style="text-align:center;color:#ccc">
+          Carregando acesso...
+        </p>
+        <p class="bla-note">
+          Se esta mensagem permanecer, o arquivo
+          auth-local.js não foi carregado corretamente.
+          Confira se ele está publicado no GitHub.
+        </p>
+      </div>
+    </div>
+  </div>
+
   <div id="overlay" class="overlay"></div>
 
   <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="brand-icon">🎤</div>
-
       <div>
         <div class="brand-name">
           BATTLE<span>-ON</span>
         </div>
-
-        <div class="brand-subtitle">
-          ARENA DE RIMAS
-        </div>
+        <div class="brand-subtitle">ARENA DE RIMAS</div>
       </div>
-
       <button id="close-menu"
         class="icon-btn mobile-only"
         aria-label="Fechar menu">✕</button>
@@ -53,50 +269,35 @@
     <div class="menu-label">MENU PRINCIPAL</div>
 
     <nav class="navigation">
-      <button class="nav-btn active"
-        data-page="dashboard">
+      <button class="nav-btn active" data-page="dashboard">
         ▦ <span>Visão geral</span>
       </button>
-
-      <button class="nav-btn"
-        data-page="config">
+      <button class="nav-btn" data-page="config">
         ⚙ <span>Configurações</span>
       </button>
-
-      <button class="nav-btn"
-        data-page="mcs">
+      <button class="nav-btn" data-page="mcs">
         ♟ <span>Participantes</span>
       </button>
-
-      <button class="nav-btn"
-        data-page="chave">
+      <button class="nav-btn" data-page="chave">
         ⑂ <span>Chaveamento</span>
       </button>
-
-      <button class="nav-btn"
-        data-page="arena">
+      <button class="nav-btn" data-page="arena">
         🎤 <span>Arena e votação</span>
       </button>
-
-      <button class="nav-btn"
-        data-page="historico">
+      <button class="nav-btn" data-page="historico">
         ▤ <span>Histórico</span>
       </button>
-
-      <button class="nav-btn"
-        data-page="ranking">
+      <button class="nav-btn" data-page="ranking">
         ♛ <span>Ranking</span>
       </button>
-
-      <button class="nav-btn"
-        data-page="perfis">
+      <button class="nav-btn" data-page="perfis">
         ◉ <span>Perfil dos MCs</span>
       </button>
     </nav>
 
     <div class="sidebar-footer">
       <span class="online-dot"></span>
-      BATTLE-ON · V1.7
+      BATTLE-ON · V1.7.1
     </div>
   </aside>
 
@@ -106,234 +307,158 @@
         <button id="open-menu"
           class="icon-btn mobile-only"
           aria-label="Abrir menu">☰</button>
-
         <div>
           <div class="eyebrow">
             BATTLE-ON / PAINEL DE CONTROLE
           </div>
-
-          <h1 id="page-title">
-            Visão geral
-          </h1>
+          <h1 id="page-title">Visão geral</h1>
         </div>
       </div>
-
       <div class="event-pill" id="event-pill">
         BATTLE-ON
       </div>
     </header>
 
-    <section class="page active"
-      id="page-dashboard">
-
+    <section class="page active" id="page-dashboard">
       <div class="hero">
-        <div class="eyebrow">
-          A BATALHA COMEÇA AQUI
-        </div>
-
+        <div class="eyebrow">A BATALHA COMEÇA AQUI</div>
         <h2>
           ONDE AS RIMAS<br>
           VIRAM <span>HISTÓRIA.</span>
         </h2>
-
         <p>
-          Cadastre, sorteie, vote e
-          descubra o campeão.
+          Cadastre, sorteie, vote e descubra o campeão.
         </p>
-
-        <button class="btn primary"
-          data-go="config">
+        <button class="btn primary" data-go="config">
           CONFIGURAR EVENTO →
         </button>
-
         <div class="hero-mic">🎤</div>
       </div>
 
       <div class="stats">
         <div class="stat">
-          <div class="stat-label">
-            MCS CADASTRADOS
-          </div>
-
+          <div class="stat-label">MCS CADASTRADOS</div>
           <strong id="stat-mcs">0</strong>
           <small>Participantes</small>
         </div>
-
         <div class="stat">
-          <div class="stat-label">
-            CONFRONTOS
-          </div>
-
+          <div class="stat-label">CONFRONTOS</div>
           <strong id="stat-total">0</strong>
           <small>Total de batalhas</small>
         </div>
-
         <div class="stat">
-          <div class="stat-label">
-            FINALIZADOS
-          </div>
-
+          <div class="stat-label">FINALIZADOS</div>
           <strong id="stat-done">0</strong>
           <small>Resultados apurados</small>
         </div>
-
         <div class="stat">
-          <div class="stat-label">
-            FASE ATUAL
-          </div>
-
-          <strong class="stat-phase"
-            id="stat-phase">—</strong>
-
+          <div class="stat-label">FASE ATUAL</div>
+          <strong class="stat-phase" id="stat-phase">—</strong>
           <small>Etapa do evento</small>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title">
-          ⚡ PRÓXIMO CONFRONTO
-        </div>
-
+        <div class="panel-title">⚡ PRÓXIMO CONFRONTO</div>
         <div id="next-battle" class="empty">
           Cadastre os MCs e realize o sorteio.
         </div>
-
         <div id="champion-box"></div>
       </div>
 
       <section class="panel"
         id="galeria-principal"
-        aria-label="Fotos principais da batalha">
-
+        aria-label="Fotos da batalha">
         <div class="panel-title">
           📸 REGISTROS DA BATALHA
         </div>
-
         <p class="muted" id="galeria-status">
           Finalize a batalha para liberar as fotos.
         </p>
-
-        <div class="galeria-grid"
-          id="galeria-grid"></div>
+        <div class="galeria-grid" id="galeria-grid"></div>
       </section>
     </section>
 
     <section class="page" id="page-ranking">
       <div class="section-heading">
         <h2>RANKING DOS MCS</h2>
-        <p>
-          Classificação geral e por temporada.
-        </p>
+        <p>Classificação geral e por temporada.</p>
       </div>
-
       <div id="ranking-content"></div>
     </section>
 
     <section class="page" id="page-perfis">
       <div class="section-heading">
         <h2>PERFIL DOS MCS</h2>
-        <p>
-          Estatísticas, fotos e trajetória
-          dos participantes.
-        </p>
+        <p>Estatísticas, fotos e trajetória.</p>
       </div>
-
       <div id="perfis-content"></div>
     </section>
 
     <section class="page" id="page-config">
       <div class="section-heading">
         <h2>CONFIGURAÇÕES</h2>
-        <p>
-          Personalize as regras do seu evento.
-        </p>
+        <p>Personalize as regras do seu evento.</p>
       </div>
 
-      <form id="config-form"
-        class="panel form-grid">
-
+      <form id="config-form" class="panel form-grid">
         <label>
           Nome do evento
-          <input id="event-name"
-            maxlength="80" required>
+          <input id="event-name" maxlength="80" required>
         </label>
 
         <label>
           MCs por equipe
           <input id="team-size"
-            type="number"
-            min="1" max="20" required>
-
+            type="number" min="1" max="20" required>
           <small>
-            1 = individual, 2 = duplas,
-            3 = trios...
+            1 = individual, 2 = duplas, 3 = trios...
           </small>
         </label>
 
         <label>
           Sistema de decisão
-
           <select id="vote-mode">
-            <option value="jurados">
-              Somente jurados
-            </option>
-
-            <option value="publico">
-              Somente público
-            </option>
-
-            <option value="ambos">
-              Público + jurados
-            </option>
+            <option value="jurados">Somente jurados</option>
+            <option value="publico">Somente público</option>
+            <option value="ambos">Público + jurados</option>
           </select>
         </label>
 
         <label>
           Quantidade de jurados
-
           <input id="judge-count"
-            type="number"
-            min="1" max="50" required>
+            type="number" min="1" max="50" required>
         </label>
 
         <label>
           Peso dos jurados (%)
-
           <input id="judge-weight"
-            type="number"
-            min="0" max="100" required>
-
+            type="number" min="0" max="100" required>
           <small>
-            No modo misto, o restante é
-            o peso do público.
+            No modo misto, o restante é o peso do público.
           </small>
         </label>
 
         <label>
           Tempo por round (segundos)
-
           <input id="round-time"
-            type="number"
-            min="10" max="3600" required>
+            type="number" min="10" max="3600" required>
         </label>
 
         <div class="full actions">
-          <button type="submit"
-            class="btn primary">
+          <button type="submit" class="btn primary">
             SALVAR CONFIGURAÇÕES
           </button>
-
           <button type="button"
-            id="new-event"
-            class="btn danger">
+            id="new-event" class="btn danger">
             NOVO EVENTO
           </button>
         </div>
       </form>
 
       <p class="hint">
-        As configurações ficam bloqueadas
-        após o sorteio.
+        As configurações ficam bloqueadas após o sorteio.
       </p>
     </section>
 
@@ -344,82 +469,54 @@
       </div>
 
       <div class="panel">
-        <div class="panel-title">
-          + CADASTRAR MC
-        </div>
-
-        <form id="mc-form"
-          class="inline-form">
-
+        <div class="panel-title">+ CADASTRAR MC</div>
+        <form id="mc-form" class="inline-form">
           <input id="mc-name"
-            maxlength="50"
-            required
+            maxlength="50" required
             placeholder="Vulgo do MC">
-
           <input id="mc-city"
             maxlength="60"
             placeholder="Cidade / bairro">
-
-          <button class="btn primary"
-            type="submit">
+          <button class="btn primary" type="submit">
             ADICIONAR MC
           </button>
         </form>
-
-        <div id="mc-list"
-          class="mc-list"></div>
+        <div id="mc-list" class="mc-list"></div>
       </div>
 
       <div class="panel">
-        <div class="panel-title">
-          EQUIPES
-        </div>
-
+        <div class="panel-title">EQUIPES</div>
         <p class="muted">
-          Na modalidade individual, cada MC
-          participa sozinho. Para duplas,
-          trios e outras modalidades, forme
+          Na modalidade individual, cada MC participa sozinho.
+          Para duplas, trios e outras modalidades, forme
           as equipes antes do sorteio.
         </p>
-
         <form id="team-form">
-          <div id="team-options"
-            class="team-options"></div>
-
+          <div id="team-options" class="team-options"></div>
           <div class="inline-form">
             <input id="team-name"
               maxlength="60"
               placeholder="Nome da equipe (opcional)">
-
-            <button class="btn primary"
-              type="submit">
+            <button class="btn primary" type="submit">
               CRIAR EQUIPE
             </button>
           </div>
         </form>
-
-        <div id="team-list"
-          class="mc-list"></div>
+        <div id="team-list" class="mc-list"></div>
       </div>
     </section>
 
     <section class="page" id="page-chave">
       <div class="section-heading">
         <h2>CHAVEAMENTO</h2>
-        <p>
-          Confrontos sorteados e
-          avanço automático.
-        </p>
+        <p>Confrontos sorteados e avanço automático.</p>
       </div>
 
       <div class="toolbar">
-        <button id="draw-btn"
-          class="btn primary">
+        <button id="draw-btn" class="btn primary">
           ⚡ REALIZAR SORTEIO
         </button>
-
-        <button id="reset-bracket"
-          class="btn danger">
+        <button id="reset-bracket" class="btn danger">
           APAGAR CHAVE
         </button>
       </div>
@@ -431,17 +528,13 @@
         </label>
       </div>
 
-      <div id="bracket"
-        class="bracket"></div>
+      <div id="bracket" class="bracket"></div>
     </section>
 
     <section class="page" id="page-arena">
       <div class="section-heading">
         <h2>ARENA DE BATALHA</h2>
-        <p>
-          Cronômetro e votação
-          dos confrontos.
-        </p>
+        <p>Cronômetro e votação dos confrontos.</p>
       </div>
 
       <div class="panel">
@@ -450,82 +543,54 @@
           <select id="battle-select"></select>
         </label>
 
-        <div id="arena-match"
-          class="arena-match"></div>
+        <div id="arena-match" class="arena-match"></div>
 
         <div class="timer">
           <div class="timer-label">
             CRONÔMETRO DO ROUND
           </div>
-
-          <div id="timer-display">
-            00:45
-          </div>
-
+          <div id="timer-display">00:45</div>
           <div class="timer-actions">
-            <button class="btn primary"
-              id="timer-start">
+            <button class="btn primary" id="timer-start">
               INICIAR / PAUSAR
             </button>
-
-            <button class="btn secondary"
-              id="timer-reset">
+            <button class="btn secondary" id="timer-reset">
               REINICIAR
             </button>
           </div>
         </div>
       </div>
 
-      <div class="panel"
-        id="voting-panel">
-
-        <div class="panel-title">
-          🗳 VOTAÇÃO
-        </div>
-
+      <div class="panel" id="voting-panel">
+        <div class="panel-title">🗳 VOTAÇÃO</div>
         <p class="muted">
-          Registre os votos do público
-          e dos jurados. O sistema calcula
-          o resultado.
+          Registre os votos do público e dos jurados.
+          O sistema calcula o resultado.
         </p>
-
         <div id="vote-fields"></div>
 
         <div class="actions vote-actions">
-          <button class="btn secondary"
-            id="save-votes">
+          <button class="btn secondary" id="save-votes">
             SALVAR VOTOS
           </button>
-
-          <button class="btn primary"
-            id="finish-battle">
+          <button class="btn primary" id="finish-battle">
             ENCERRAR E APURAR
           </button>
         </div>
-
         <div id="vote-result"></div>
       </div>
     </section>
 
-    <section class="page"
-      id="page-historico">
-
+    <section class="page" id="page-historico">
       <div class="section-heading">
         <h2>HISTÓRICO</h2>
-        <p>
-          Resultados dos confrontos
-          finalizados.
-        </p>
+        <p>Resultados dos confrontos finalizados.</p>
       </div>
-
-      <div class="panel"
-        id="history-list"></div>
+      <div class="panel" id="history-list"></div>
     </section>
   </main>
 
-  <div class="toast"
-    id="toast"
-    role="status"
-    aria-live="polite"></div>
+  <div class="toast" id="toast"
+    role="status" aria-live="polite"></div>
 </body>
 </html>

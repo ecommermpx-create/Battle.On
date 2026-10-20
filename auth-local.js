@@ -2,22 +2,15 @@
 "use strict";
 
 /*
-  BATTLE-ON v1.7 LOCAL
+  BATTLE-ON v1.7.1
+  Correção da tela preta.
 
-  Modo de demonstração SEM autenticação real.
-  Não coleta nem armazena senhas.
+  MODO LOCAL DE DEMONSTRAÇÃO.
 
-  - Cadastro local de MC e organizador
-  - Seleção de conta local
-  - Manter conectado neste aparelho
-  - Sair
-  - Navegação conforme tipo de perfil
-  - Confirmação de e-mail e recuperação:
-    indisponíveis até integrar um servidor
-
-  IMPORTANTE:
-  Os controles de acesso são apenas visuais.
-  Não protegem os dados contra manipulação.
+  Não existe autenticação real nesta versão.
+  Não são solicitadas nem armazenadas senhas.
+  O papel de organizador não é verificado.
+  Os dados continuam no navegador.
 */
 
 (() => {
@@ -27,15 +20,27 @@
 
   const $ = id => document.getElementById(id);
 
-  const adminPages = new Set([
+  const auth = $("battle-local-auth");
+  const content = $("bla-content");
+
+  if (!auth || !content) {
+    return;
+  }
+
+  let users = [];
+  let currentUser = null;
+  let currentScreen = "login";
+  let selectedRole = "mc";
+
+  const adminPages = [
     "config",
     "mcs",
     "chave",
     "arena",
     "historico"
-  ]);
+  ];
 
-  const blockedIds = new Set([
+  const adminControls = [
     "config-form",
     "mc-form",
     "team-form",
@@ -46,20 +51,35 @@
     "finish-battle",
     "timer-start",
     "timer-reset"
-  ]);
+  ];
 
-  let users = readUsers();
-  let activeUser = null;
-  let screen = "login";
-  let role = "mc";
+  function escapeHTML(value) {
+    return String(value ?? "").replace(
+      /[&<>"']/g,
+      character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[character]
+    );
+  }
 
   function readUsers() {
     try {
-      const value = JSON.parse(
+      const saved = JSON.parse(
         localStorage.getItem(USERS_KEY) || "[]"
       );
 
-      return Array.isArray(value) ? value : [];
+      return Array.isArray(saved)
+        ? saved.filter(user =>
+            user &&
+            typeof user.id === "string" &&
+            typeof user.name === "string" &&
+            ["mc", "organizador"].includes(user.role)
+          )
+        : [];
     } catch {
       return [];
     }
@@ -71,412 +91,137 @@
         USERS_KEY,
         JSON.stringify(users)
       );
+
       return true;
     } catch {
-      alert(
-        "Não foi possível salvar os perfis neste navegador."
+      showMessage(
+        "Não foi possível salvar neste navegador."
       );
+
       return false;
     }
   }
 
-  function escapeHTML(value) {
-    return String(value ?? "").replace(
-      /[&<>"']/g,
-      char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      })[char]
-    );
+  function getRemember() {
+    try {
+      return localStorage.getItem(
+        REMEMBER_KEY
+      ) === "yes";
+    } catch {
+      return false;
+    }
   }
 
-  function newId() {
-    if (crypto.randomUUID) {
+  function getSession() {
+    try {
+      const temporary = sessionStorage.getItem(
+        SESSION_KEY
+      );
+
+      if (temporary) {
+        return temporary;
+      }
+
+      if (getRemember()) {
+        return localStorage.getItem(SESSION_KEY);
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  function clearSession() {
+    try {
+      localStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem(SESSION_KEY);
+    } catch {
+      // Armazenamento indisponível.
+    }
+  }
+
+  function saveSession(id, persistent) {
+    try {
+      clearSession();
+
+      localStorage.setItem(
+        REMEMBER_KEY,
+        persistent ? "yes" : "no"
+      );
+
+      if (persistent) {
+        localStorage.setItem(SESSION_KEY, id);
+      } else {
+        sessionStorage.setItem(SESSION_KEY, id);
+      }
+
+      return true;
+    } catch {
+      showMessage(
+        "Não foi possível lembrar a conta neste navegador."
+      );
+
+      return false;
+    }
+  }
+
+  function makeId() {
+    if (
+      typeof crypto !== "undefined" &&
+      typeof crypto.randomUUID === "function"
+    ) {
       return crypto.randomUUID();
     }
 
     return (
       Date.now().toString(36) +
+      "-" +
       Math.random().toString(36).slice(2)
     );
   }
 
-  function remember() {
-    return localStorage.getItem(
-      REMEMBER_KEY
-    ) === "yes";
-  }
-
-  function storedSession() {
-    return (
-      sessionStorage.getItem(SESSION_KEY) ||
-      (
-        remember()
-          ? localStorage.getItem(SESSION_KEY)
-          : null
-      )
-    );
-  }
-
-  function saveSession(userId, persistent) {
-    localStorage.removeItem(SESSION_KEY);
-    sessionStorage.removeItem(SESSION_KEY);
-
-    localStorage.setItem(
-      REMEMBER_KEY,
-      persistent ? "yes" : "no"
-    );
-
-    const destination = persistent
-      ? localStorage
-      : sessionStorage;
-
-    destination.setItem(
-      SESSION_KEY,
-      userId
-    );
-  }
-
-  function clearSession() {
-    localStorage.removeItem(SESSION_KEY);
-    sessionStorage.removeItem(SESSION_KEY);
-  }
-
-  const style = document.createElement("style");
-
-  style.textContent = `
-    #battle-local-auth {
-      position:fixed;
-      inset:0;
-      z-index:9999;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:auto;
-      padding:20px;
-      box-sizing:border-box;
-      background:
-        radial-gradient(
-          circle at 85% 15%,
-          #58192a 0,
-          transparent 38%
-        ),
-        repeating-linear-gradient(
-          -35deg,
-          transparent 0 24px,
-          #ffffff04 25px 26px
-        ),
-        #0b0b0e;
-      color:#fff;
-      font-family:Arial,Helvetica,sans-serif;
-    }
-
-    #battle-local-auth[hidden] {
-      display:none !important;
-    }
-
-    .bla-card {
-      width:min(100%,450px);
-      box-sizing:border-box;
-      padding:30px;
-      background:#17161b;
-      border:1px solid #6d2c3e;
-      border-radius:10px;
-      box-shadow:7px 7px 0 #070609;
-    }
-
-    .bla-brand {
-      text-align:center;
-      margin-bottom:22px;
-    }
-
-    .bla-brand h1 {
-      margin:0;
-      color:#fff;
-      font:44px Impact,Arial,sans-serif;
-      letter-spacing:2px;
-    }
-
-    .bla-brand h1 span {
-      color:#ef405c;
-    }
-
-    .bla-brand small {
-      display:block;
-      margin-top:5px;
-      font-size:10px;
-      letter-spacing:2px;
-      color:#b9a9b1;
-    }
-
-    .bla-tag {
-      display:inline-block;
-      padding:6px 10px;
-      margin-top:12px;
-      background:#3b202a;
-      border:1px solid #824056;
-      border-radius:4px;
-      color:#ffb2c0;
-      font-size:10px;
-      font-weight:800;
-      letter-spacing:1px;
-    }
-
-    .bla-tabs {
-      display:flex;
-      gap:8px;
-      margin-bottom:20px;
-    }
-
-    .bla-tabs button {
-      flex:1;
-      padding:12px 8px;
-      background:#29252d;
-      color:#ddd;
-      border:1px solid #51404a;
-      border-radius:5px;
-      cursor:pointer;
-      font-weight:800;
-    }
-
-    .bla-tabs button.active {
-      background:#c42d4a;
-      border-color:#f04461;
-      color:#fff;
-    }
-
-    .bla-field {
-      display:block;
-      margin-bottom:15px;
-      font-size:12px;
-      font-weight:800;
-      color:#eee;
-    }
-
-    .bla-field input,
-    .bla-field select {
-      display:block;
-      width:100%;
-      box-sizing:border-box;
-      margin-top:7px;
-      padding:13px;
-      border:1px solid #58434e;
-      border-radius:5px;
-      outline:none;
-      background:#0e0e13;
-      color:#fff;
-      font-size:14px;
-    }
-
-    .bla-field input:focus,
-    .bla-field select:focus {
-      border-color:#f04461;
-    }
-
-    .bla-check {
-      display:flex;
-      gap:9px;
-      align-items:center;
-      margin:14px 0;
-      font-size:12px;
-      color:#ddd;
-      cursor:pointer;
-    }
-
-    .bla-check input {
-      width:16px;
-      height:16px;
-      accent-color:#ef405c;
-    }
-
-    .bla-button {
-      width:100%;
-      padding:14px;
-      border:0;
-      border-radius:5px;
-      background:#d52e4e;
-      color:#fff;
-      font-weight:900;
-      letter-spacing:1px;
-      cursor:pointer;
-    }
-
-    .bla-button:hover {
-      background:#ed405f;
-    }
-
-    .bla-link {
-      display:inline-block;
-      padding:9px 0;
-      background:none;
-      border:0;
-      color:#ff8ca1;
-      text-decoration:underline;
-      cursor:pointer;
-      font-size:12px;
-    }
-
-    .bla-note {
-      margin:14px 0;
-      padding:12px;
-      background:#2a2028;
-      border-left:3px solid #e73757;
-      color:#d9cbd2;
-      font-size:12px;
-      line-height:1.6;
-    }
-
-    .bla-message {
-      min-height:18px;
-      margin-top:12px;
-      color:#ffc0cc;
-      font-size:12px;
-      line-height:1.5;
-    }
-
-    .bla-userbar {
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      flex-wrap:wrap;
-      gap:10px;
-      margin:10px 18px;
-      padding:11px 13px;
-      border:1px solid #563341;
-      border-radius:5px;
-      background:#1b171e;
-      color:#fff;
-      font-size:12px;
-    }
-
-    .bla-userbar strong {
-      color:#ff8399;
-    }
-
-    .bla-userbar button {
-      padding:9px 13px;
-      border:0;
-      border-radius:4px;
-      background:#b52c47;
-      color:#fff;
-      cursor:pointer;
-      font-weight:bold;
-    }
-
-    .bla-role-note {
-      margin:10px 18px;
-      padding:10px 12px;
-      border-left:3px solid #e73757;
-      background:#292028;
-      color:#d9cbd2;
-      font-size:12px;
-      line-height:1.5;
-    }
-
-    @media(max-width:480px) {
-      .bla-card {
-        padding:22px;
-      }
-
-      .bla-brand h1 {
-        font-size:37px;
-      }
-    }
-  `;
-
-  document.head.appendChild(style);
-
-  const auth = document.createElement("div");
-  auth.id = "battle-local-auth";
-
-  document.body.appendChild(auth);
-
   function showMessage(text) {
-    const el = $("bla-message");
+    const element = $("bla-message");
 
-    if (el) {
-      el.textContent = text;
+    if (element) {
+      element.textContent = text;
     }
   }
 
-  function header() {
+  function tabsHTML() {
     return `
-      <div class="bla-brand">
-        <h1>BATTLE-<span>ON</span></h1>
-        <small>SUA ARENA. SUA HISTÓRIA.</small>
-        <span class="bla-tag">
-          MODO LOCAL DE DEMONSTRAÇÃO
-        </span>
+      <div class="bla-tabs">
+        <button
+          type="button"
+          id="bla-tab-login"
+          class="${currentScreen === "login"
+            ? "active"
+            : ""}">
+          ENTRAR
+        </button>
+
+        <button
+          type="button"
+          id="bla-tab-register"
+          class="${currentScreen === "register"
+            ? "active"
+            : ""}">
+          CRIAR PERFIL
+        </button>
       </div>
     `;
-  }
-
-  function renderAuth() {
-    document.body.classList.remove(
-      "battle-local-ready"
-    );
-
-    auth.hidden = false;
-
-    const registering = screen === "register";
-
-    auth.innerHTML = `
-      <div class="bla-card">
-        ${header()}
-
-        <div class="bla-tabs">
-          <button
-            type="button"
-            data-screen="login"
-            class="${!registering ? "active" : ""}">
-            ENTRAR
-          </button>
-
-          <button
-            type="button"
-            data-screen="register"
-            class="${registering ? "active" : ""}">
-            CRIAR PERFIL
-          </button>
-        </div>
-
-        ${registering
-          ? registerHTML()
-          : loginHTML()}
-
-        <div class="bla-message"
-          id="bla-message"
-          role="status"></div>
-      </div>
-    `;
-
-    auth.querySelectorAll("[data-screen]")
-      .forEach(button => {
-        button.addEventListener("click", () => {
-          screen = button.dataset.screen;
-          renderAuth();
-        });
-      });
-
-    if (registering) {
-      bindRegister();
-    } else {
-      bindLogin();
-    }
   }
 
   function loginHTML() {
     return `
       <form id="bla-login-form">
         <label class="bla-field">
-          Selecione seu perfil neste aparelho
+          Perfil neste aparelho
 
           <select id="bla-account" required>
             <option value="">
-              Selecione uma conta local
+              Selecione um perfil
             </option>
 
             ${users.map(user => `
@@ -491,25 +236,26 @@
         </label>
 
         <label class="bla-check">
-          <input type="checkbox"
+          <input
+            type="checkbox"
             id="bla-remember"
-            ${remember() ? "checked" : ""}>
+            ${getRemember() ? "checked" : ""}>
           Manter conectado neste aparelho
         </label>
 
-        <button type="submit"
-          class="bla-button">
+        <button type="submit" class="bla-button">
           ENTRAR NA ARENA
         </button>
       </form>
 
       <div class="bla-note">
-        Este é um acesso local de demonstração,
-        sem senha e sem verificação de identidade.
-        Não utilize para proteger eventos reais.
+        Acesso local para testes.
+        Não existe verificação de identidade
+        ou senha nesta versão.
       </div>
 
-      <button type="button"
+      <button
+        type="button"
         class="bla-link"
         id="bla-forgot">
         Esqueceu sua senha?
@@ -525,12 +271,14 @@
 
           <select id="bla-role">
             <option value="mc"
-              ${role === "mc" ? "selected" : ""}>
+              ${selectedRole === "mc"
+                ? "selected"
+                : ""}>
               Sou MC
             </option>
 
             <option value="organizador"
-              ${role === "organizador"
+              ${selectedRole === "organizador"
                 ? "selected"
                 : ""}>
               Sou organizador
@@ -540,20 +288,18 @@
 
         <label class="bla-field">
           <span id="bla-name-label">
-            ${role === "mc"
+            ${selectedRole === "mc"
               ? "Vulgo do MC"
               : "Nome do organizador"}
           </span>
 
           <input
             id="bla-name"
-            maxlength="80"
+            type="text"
             minlength="2"
+            maxlength="80"
             required
-            autocomplete="off"
-            placeholder="${role === "mc"
-              ? "Seu vulgo"
-              : "Seu nome"}">
+            placeholder="Digite seu nome">
         </label>
 
         <label class="bla-field">
@@ -564,13 +310,15 @@
             type="email"
             maxlength="254"
             required
-            autocomplete="off"
-            placeholder="email@exemplo.com">
+            placeholder="seuemail@exemplo.com">
         </label>
 
-        <label class="bla-field"
+        <label
+          class="bla-field"
           id="bla-city-field"
-          ${role !== "mc" ? "hidden" : ""}>
+          ${selectedRole === "mc"
+            ? ""
+            : "hidden"}>
           Cidade / bairro
 
           <input
@@ -580,23 +328,61 @@
         </label>
 
         <div class="bla-note">
-          O e-mail será apenas registrado
-          neste navegador. Ainda não enviamos
-          links de confirmação.
+          O e-mail será registrado apenas
+          neste navegador, sem confirmação real.
 
-          <span id="bla-organizer-note">
-            ${role === "organizador"
-              ? " A aprovação do desenvolvedor será exigida quando a autenticação real for ativada."
+          <span id="bla-role-note">
+            ${selectedRole === "organizador"
+              ? " A aprovação do desenvolvedor ainda não está disponível neste modo de demonstração."
               : ""}
           </span>
         </div>
 
-        <button type="submit"
-          class="bla-button">
+        <button type="submit" class="bla-button">
           CRIAR PERFIL LOCAL
         </button>
       </form>
     `;
+  }
+
+  function renderAuth() {
+    auth.hidden = false;
+
+    content.innerHTML = `
+      ${tabsHTML()}
+
+      ${currentScreen === "register"
+        ? registerHTML()
+        : loginHTML()}
+
+      <div
+        id="bla-message"
+        class="bla-message"
+        role="status">
+      </div>
+    `;
+
+    $("bla-tab-login").addEventListener(
+      "click",
+      () => {
+        currentScreen = "login";
+        renderAuth();
+      }
+    );
+
+    $("bla-tab-register").addEventListener(
+      "click",
+      () => {
+        currentScreen = "register";
+        renderAuth();
+      }
+    );
+
+    if (currentScreen === "register") {
+      bindRegister();
+    } else {
+      bindLogin();
+    }
   }
 
   function bindLogin() {
@@ -613,17 +399,18 @@
 
         if (!user) {
           showMessage(
-            "Selecione um perfil existente."
+            "Selecione um perfil cadastrado."
           );
           return;
         }
 
-        saveSession(
-          user.id,
-          $("bla-remember").checked
-        );
+        const persistent = $("bla-remember").checked;
 
-        enter(user);
+        if (!saveSession(user.id, persistent)) {
+          return;
+        }
+
+        enterApp(user);
       }
     );
 
@@ -631,7 +418,7 @@
       "click",
       () => {
         showMessage(
-          "A recuperação de senha por e-mail será disponibilizada quando conectarmos um servidor. Nesta demonstração, não existem senhas."
+          "A recuperação por e-mail será ativada quando tivermos um servidor. Nesta versão local não existem senhas."
         );
       }
     );
@@ -641,24 +428,19 @@
     $("bla-role").addEventListener(
       "change",
       event => {
-        role = event.target.value;
+        selectedRole = event.target.value;
 
         $("bla-name-label").textContent =
-          role === "mc"
+          selectedRole === "mc"
             ? "Vulgo do MC"
             : "Nome do organizador";
 
-        $("bla-name").placeholder =
-          role === "mc"
-            ? "Seu vulgo"
-            : "Seu nome";
-
         $("bla-city-field").hidden =
-          role !== "mc";
+          selectedRole !== "mc";
 
-        $("bla-organizer-note").textContent =
-          role === "organizador"
-            ? " A aprovação do desenvolvedor será exigida quando a autenticação real for ativada."
+        $("bla-role-note").textContent =
+          selectedRole === "organizador"
+            ? " A aprovação do desenvolvedor ainda não está disponível neste modo de demonstração."
             : "";
       }
     );
@@ -673,7 +455,7 @@
         const email = $("bla-email")
           .value.trim().toLowerCase();
 
-        const city = role === "mc"
+        const city = selectedRole === "mc"
           ? $("bla-city").value.trim()
           : "";
 
@@ -690,17 +472,17 @@
           )
         ) {
           showMessage(
-            "Já existe um perfil local com este e-mail."
+            "Este e-mail já possui um perfil local."
           );
           return;
         }
 
         const user = {
-          id: newId(),
+          id: makeId(),
           name,
           email,
           city,
-          role,
+          role: selectedRole,
           createdAt: new Date().toISOString(),
           emailVerified: false,
           organizerApproved: false
@@ -713,32 +495,32 @@
           return;
         }
 
-        screen = "login";
+        currentScreen = "login";
         renderAuth();
 
         showMessage(
-          "Perfil local criado! Selecione sua conta para entrar. O e-mail não foi verificado e nenhuma aprovação real foi realizada."
+          "Perfil criado! Agora selecione sua conta para entrar. O e-mail ainda não foi confirmado."
         );
       }
     );
   }
 
-  function isOrganizer() {
-    return activeUser?.role === "organizador";
+  function isOrganizerDemo() {
+    return currentUser?.role === "organizador";
   }
 
-  function applyMenu() {
+  function updateMenu() {
+    const organizer = isOrganizerDemo();
+
     document.querySelectorAll(
       ".nav-btn[data-page]"
     ).forEach(button => {
       const page = button.dataset.page;
 
       const visible =
-        isOrganizer() ||
-        !adminPages.has(page);
+        organizer || !adminPages.includes(page);
 
       button.hidden = !visible;
-
       button.style.display =
         visible ? "" : "none";
     });
@@ -746,20 +528,18 @@
     document.querySelectorAll(
       '[data-go="config"]'
     ).forEach(button => {
-      button.hidden = !isOrganizer();
-
+      button.hidden = !organizer;
       button.style.display =
-        isOrganizer() ? "" : "none";
+        organizer ? "" : "none";
     });
   }
 
-  function userBar() {
-    let bar = $("battle-local-userbar");
+  function updateUserBar() {
+    let bar = $("bla-userbar");
 
     if (!bar) {
       bar = document.createElement("div");
-
-      bar.id = "battle-local-userbar";
+      bar.id = "bla-userbar";
       bar.className = "bla-userbar";
 
       const topbar = document.querySelector(
@@ -771,22 +551,23 @@
           "afterend",
           bar
         );
+      } else {
+        document.querySelector("main")?.prepend(bar);
       }
     }
 
     bar.innerHTML = `
       <span>
         <strong>
-          ${escapeHTML(activeUser.name)}
+          ${escapeHTML(currentUser.name)}
         </strong>
 
-        · ${isOrganizer()
+        · ${isOrganizerDemo()
           ? "ORGANIZADOR (DEMO)"
           : "MC (DEMO)"}
       </span>
 
-      <button type="button"
-        id="bla-logout">
+      <button type="button" id="bla-logout">
         SAIR
       </button>
     `;
@@ -795,27 +576,10 @@
       "click",
       logout
     );
-
-    let note = $("battle-local-note");
-
-    if (!note) {
-      note = document.createElement("div");
-      note.id = "battle-local-note";
-      note.className = "bla-role-note";
-
-      bar.insertAdjacentElement(
-        "afterend",
-        note
-      );
-    }
-
-    note.textContent = isOrganizer()
-      ? "Modo demonstração: o acesso de organizador não foi aprovado nem autenticado por um servidor."
-      : "Modo demonstração: este perfil não tem autenticação real. Os controles administrativos ficam ocultos apenas na interface.";
   }
 
-  function enter(user) {
-    activeUser = user;
+  function enterApp(user) {
+    currentUser = user;
 
     auth.hidden = true;
 
@@ -823,42 +587,48 @@
       "battle-local-ready"
     );
 
-    applyMenu();
-    userBar();
+    updateMenu();
+    updateUserBar();
 
-    const destination = isOrganizer()
+    const destination = isOrganizerDemo()
       ? "dashboard"
       : "ranking";
 
-    if (typeof go === "function") {
-      go(destination);
-    } else {
-      document.querySelector(
-        `.nav-btn[data-page="${destination}"]`
-      )?.click();
+    // Navegação compatível com o script.js
+    // original e com o ranking.js.
+    try {
+      if (typeof go === "function") {
+        go(destination);
+      } else {
+        document.querySelector(
+          `.nav-btn[data-page="${destination}"]`
+        )?.click();
+      }
+    } catch (error) {
+      console.warn(
+        "A navegação inicial não foi concluída:",
+        error
+      );
     }
   }
 
   function logout() {
     clearSession();
-    activeUser = null;
+
+    currentUser = null;
+
+    $("bla-userbar")?.remove();
 
     document.body.classList.remove(
       "battle-local-ready"
     );
 
-    const bar = $("battle-local-userbar");
-    const note = $("battle-local-note");
-
-    bar?.remove();
-    note?.remove();
-
-    screen = "login";
+    currentScreen = "login";
     renderAuth();
   }
 
   function blockAdminAction(event) {
-    if (!activeUser || isOrganizer()) {
+    if (!currentUser || isOrganizerDemo()) {
       return;
     }
 
@@ -868,7 +638,7 @@
       return;
     }
 
-    const restrictedNavigation = target.closest(
+    const adminNavigation = target.closest(
       [
         '[data-page="config"]',
         '[data-page="mcs"]',
@@ -879,16 +649,11 @@
       ].join(",")
     );
 
-    const restrictedControl = [
-      ...blockedIds
-    ].some(id => Boolean(
-      target.closest(`#${id}`)
-    ));
+    const adminControl = adminControls.some(
+      id => target.closest(`#${id}`)
+    );
 
-    if (
-      restrictedNavigation ||
-      restrictedControl
-    ) {
+    if (adminNavigation || adminControl) {
       event.preventDefault();
       event.stopImmediatePropagation();
     }
@@ -907,19 +672,50 @@
   );
 
   function init() {
-    const id = storedSession();
+    users = readUsers();
+
+    const sessionId = getSession();
 
     const user = users.find(
-      item => item.id === id
+      item => item.id === sessionId
     );
 
     if (user) {
-      enter(user);
+      enterApp(user);
     } else {
       clearSession();
       renderAuth();
     }
   }
 
-  init();
+  try {
+    init();
+  } catch (error) {
+    console.error(
+      "Falha ao iniciar o login local:",
+      error
+    );
+
+    content.innerHTML = `
+      <div class="bla-note">
+        Ocorreu um erro ao iniciar o acesso local.
+        Seus dados de batalha não foram apagados.
+      </div>
+
+      <button
+        type="button"
+        class="bla-button"
+        id="bla-retry">
+        TENTAR NOVAMENTE
+      </button>
+    `;
+
+    $("bla-retry").addEventListener(
+      "click",
+      () => {
+        currentScreen = "login";
+        renderAuth();
+      }
+    );
+  }
 })();
